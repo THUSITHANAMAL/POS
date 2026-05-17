@@ -6,6 +6,7 @@
 <title>AlphaPOS — Cloud Point of Sale</title>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 
@@ -84,82 +85,264 @@ firestore.enablePersistence({ synchronizeTabs: true }).catch(err => {
   --text2: #374151;
   --muted: #6b7280;
   --faint: #9ca3af;
-  --primary: #0077B6;
-  --primary-h: #005F8A;
-  --primary-d: #004E71;
-  --primary-l: #E6F4F9;
-  --primary-m: #90D5EC;
-  --success: #059669;
-  --success-l: #ecfdf5;
-  --success-m: #a7f3d0;
+  --primary: #2980B9;
+  --primary-h: #2471A3;
+  --primary-d: #1F618D;
+  --primary-l: #EBF5FB;
+  --primary-m: #85C1E9;
+  --success: #27AE60;
+  --success-l: #EAFAF1;
+  --success-m: #A9DFBF;
   --warn: #d97706;
   --warn-l: #fffbeb;
   --warn-m: #fde68a;
   --err: #dc2626;
   --err-l: #fef2f2;
   --err-m: #fecaca;
-  --info: #2563eb;
-  --info-l: #eff6ff;
-  --info-m: #bfdbfe;
+  --info: #2E86C1;
+  --info-l: #EBF5FB;
+  --info-m: #AED6F1;
   --sh-xs: 0 1px 2px rgba(0,0,0,.05);
   --sh-sm: 0 1px 4px rgba(0,0,0,.06), 0 2px 8px rgba(0,0,0,.05);
   --sh-md: 0 4px 16px rgba(0,0,0,.08), 0 1px 4px rgba(0,0,0,.04);
   --sh-lg: 0 16px 40px rgba(0,0,0,.12), 0 4px 12px rgba(0,0,0,.06);
   --sh-xl: 0 24px 64px rgba(0,0,0,.16), 0 8px 24px rgba(0,0,0,.08);
-  --sidebar-bg: #023047;
+  --sidebar-bg: #002B47;
   --sidebar-surface: rgba(255,255,255,.06);
   --sidebar-border: rgba(255,255,255,.08);
   --sidebar-text: rgba(255,255,255,.75);
   --sidebar-muted: rgba(255,255,255,.4);
-  --sidebar-active-bg: rgba(0,180,216,.2);
-  --sidebar-active-text: #90E0EF;
+  --sidebar-active-bg: rgba(41,128,185,.25);
+  --sidebar-active-text: #AED6F1;
   --sidebar-label: rgba(255,255,255,.3);
   --sidebar-hover: rgba(255,255,255,.08);
 }
 
 [data-theme=dark] {
-  --bg: #0f1117;
-  --bg2: #151821;
-  --surface: #1a1d27;
-  --surface2: #1f2231;
-  --surface3: #252839;
-  --border: #2a2d3e;
-  --div: #242737;
+  --bg: #0B1929;
+  --bg2: #0F2133;
+  --surface: #132A3E;
+  --surface2: #183349;
+  --surface3: #1E3D55;
+  --border: #254A64;
+  --div: #1E3D55;
   --text: #f1f3f9;
   --text2: #c9cede;
   --muted: #8b91a8;
-  --faint: #555a73;
-  --primary: #818cf8;
-  --primary-h: #a5b4fc;
-  --primary-d: #6366f1;
-  --primary-l: #1e1f3a;
-  --primary-m: #312e81;
-  --success: #34d399;
-  --success-l: #0a2e22;
-  --success-m: #065f46;
+  --faint: #5A7A95;
+  --primary: #3498DB;
+  --primary-h: #5DADE2;
+  --primary-d: #2E86C1;
+  --primary-l: #0F2A40;
+  --primary-m: #1A3F5C;
+  --success: #2ECC71;
+  --success-l: #0C2E1B;
+  --success-m: #0E5A2E;
   --warn: #fbbf24;
   --warn-l: #2d1f06;
   --warn-m: #78350f;
   --err: #f87171;
   --err-l: #2d0a0a;
   --err-m: #7f1d1d;
-  --info: #60a5fa;
-  --info-l: #0c1d3a;
-  --info-m: #1e3a5f;
+  --info: #5DADE2;
+  --info-l: #0F2A40;
+  --info-m: #1A3F5C;
   --sh-xs: 0 1px 2px rgba(0,0,0,.3);
   --sh-sm: 0 1px 4px rgba(0,0,0,.4), 0 2px 8px rgba(0,0,0,.3);
   --sh-md: 0 4px 16px rgba(0,0,0,.5), 0 1px 4px rgba(0,0,0,.3);
   --sh-lg: 0 16px 40px rgba(0,0,0,.6), 0 4px 12px rgba(0,0,0,.4);
   --sh-xl: 0 24px 64px rgba(0,0,0,.7), 0 8px 24px rgba(0,0,0,.5);
-  --sidebar-bg: #13111f;
+  --sidebar-bg: #071320;
   --sidebar-surface: rgba(255,255,255,.05);
   --sidebar-border: rgba(255,255,255,.06);
   --sidebar-text: rgba(255,255,255,.7);
   --sidebar-muted: rgba(255,255,255,.35);
-  --sidebar-active-bg: rgba(129,140,248,.18);
-  --sidebar-active-text: #a5b4fc;
+  --sidebar-active-bg: rgba(52,152,219,.2);
+  --sidebar-active-text: #AED6F1;
   --sidebar-label: rgba(255,255,255,.25);
   --sidebar-hover: rgba(255,255,255,.06);
+}
+
+/* ═══════════════════════════════════════════════
+   RETAIL UI THEME — Large buttons, grid categories
+═══════════════════════════════════════════════ */
+[data-ui-theme="retail"] {
+  --sidebar-bg: #003352;
+  --primary: #1a6fa0;
+  --primary-h: #155d87;
+  --primary-d: #0e4a6e;
+}
+[data-ui-theme="retail"] .pos-grid {
+  grid-template-columns: 1fr 370px;
+  gap: 12px;
+  padding: 10px;
+}
+[data-ui-theme="retail"] .cat-tabs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 8px;
+  flex-wrap: unset;
+  overflow: visible;
+}
+[data-ui-theme="retail"] .cat-tab {
+  padding: 16px 10px;
+  border-radius: var(--r-md);
+  font-size: 13.5px;
+  font-weight: 700;
+  background: linear-gradient(180deg, #1a6fa0 0%, #155d87 100%);
+  color: #fff;
+  border: none;
+  text-align: center;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,.15);
+  letter-spacing: 0;
+}
+[data-ui-theme="retail"] .cat-tab:hover {
+  background: linear-gradient(180deg, #1e7bb5 0%, #1a6fa0 100%);
+  color: #fff;
+  border-color: transparent;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,.2);
+}
+[data-ui-theme="retail"] .cat-tab.active {
+  background: linear-gradient(180deg, #0e4a6e 0%, #093656 100%);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,.25), 0 1px 3px rgba(0,0,0,.15);
+}
+[data-ui-theme="retail"] .prod-grid {
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+}
+[data-ui-theme="retail"] .prod-card {
+  padding: 12px 10px;
+  border-radius: var(--r-md);
+  border-width: 2px;
+}
+[data-ui-theme="retail"] .prod-card:hover {
+  transform: translateY(-2px);
+}
+[data-ui-theme="retail"] .prod-ic {
+  width: 72px;
+  height: 72px;
+  border-radius: var(--r-md);
+  font-size: 26px;
+  margin-bottom: 8px;
+}
+[data-ui-theme="retail"] .prod-name {
+  font-size: 12.5px;
+  font-weight: 700;
+}
+[data-ui-theme="retail"] .prod-price {
+  font-size: 15px;
+  font-weight: 800;
+}
+[data-ui-theme="retail"] .prod-stock {
+  font-size: 11px;
+}
+[data-ui-theme="retail"] .cart-hd {
+  padding: 16px;
+  font-size: 16px;
+  background: linear-gradient(180deg, #003352 0%, #002B47 100%);
+  color: #fff;
+  border-bottom: none;
+}
+[data-ui-theme="retail"] .cart-hd .btn-secondary {
+  background: rgba(255,255,255,.15);
+  color: #fff;
+  border-color: rgba(255,255,255,.2);
+}
+[data-ui-theme="retail"] .cart-hd #cartCount {
+  background: #e74c3c;
+}
+[data-ui-theme="retail"] .cart-item {
+  padding: 12px;
+  border-width: 2px;
+}
+[data-ui-theme="retail"] .ci-name {
+  font-size: 14px;
+  font-weight: 700;
+}
+[data-ui-theme="retail"] .ci-price {
+  font-size: 14px;
+  font-weight: 800;
+}
+[data-ui-theme="retail"] .qty-btn {
+  width: 34px;
+  height: 34px;
+  font-size: 16px;
+  border-width: 2px;
+  border-radius: var(--r-md);
+}
+[data-ui-theme="retail"] .qty-val {
+  font-size: 16px;
+  font-weight: 800;
+  min-width: 30px;
+}
+[data-ui-theme="retail"] .cart-sum {
+  padding: 16px;
+}
+[data-ui-theme="retail"] .sum-row {
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+[data-ui-theme="retail"] .sum-row.total {
+  font-size: 22px;
+  font-weight: 900;
+}
+[data-ui-theme="retail"] .pay-btns {
+  gap: 10px;
+  margin-top: 14px;
+}
+[data-ui-theme="retail"] .pay-btns .btn {
+  min-height: 56px;
+  font-size: 16px;
+  font-weight: 700;
+  border-radius: var(--r-lg);
+}
+[data-ui-theme="retail"] .btn-success {
+  background: linear-gradient(180deg, #27AE60 0%, #1e8e4e 100%);
+}
+[data-ui-theme="retail"] .btn-primary {
+  background: linear-gradient(180deg, #2980B9 0%, #1a6fa0 100%);
+}
+[data-ui-theme="retail"] #posSearch {
+  min-height: 48px;
+  font-size: 15px;
+  border-width: 2px;
+  border-radius: var(--r-lg);
+}
+[data-ui-theme="retail"] .pos-right {
+  border-width: 2px;
+  border-radius: var(--r-xl);
+  box-shadow: var(--sh-lg);
+}
+[data-ui-theme="retail"] .topbar {
+  height: 68px;
+  padding: 0 20px;
+  box-shadow: var(--sh-sm);
+}
+[data-ui-theme="retail"] .page-title {
+  font-size: 18px;
+  font-weight: 800;
+}
+[data-ui-theme="retail"] .stat-card {
+  padding: 20px 22px;
+}
+[data-ui-theme="retail"] .stat-val {
+  font-size: 26px;
+}
+[data-ui-theme="retail"] .stat-ic {
+  width: 50px;
+  height: 50px;
+}
+[data-ui-theme="retail"] .btn-lg {
+  padding: 14px 24px;
+  font-size: 16px;
+  min-height: 52px;
 }
 
 /* ═══════════════════════════════════════════════
@@ -214,12 +397,12 @@ table { border-collapse: collapse; width: 100%; }
 }
 .sb-logo-icon {
   width: 44px; height: 44px;
-  background: linear-gradient(145deg, #3730a3 0%, #4f46e5 45%, #6366f1 100%);
+  background: linear-gradient(145deg, #002B47 0%, #1A5276 45%, #2980B9 100%);
   border-radius: 14px;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
   color: #fff;
-  box-shadow: 0 4px 20px rgba(79,70,229,.55), inset 0 1px 0 rgba(255,255,255,.25), inset 0 -1px 0 rgba(0,0,0,.15);
+  box-shadow: 0 4px 20px rgba(41,128,185,.55), inset 0 1px 0 rgba(255,255,255,.25), inset 0 -1px 0 rgba(0,0,0,.15);
   position: relative;
 }
 .sb-logo-icon::before {
@@ -289,7 +472,7 @@ table { border-collapse: collapse; width: 100%; }
   position: absolute;
   left: 0; top: 20%; bottom: 20%;
   width: 3px;
-  background: #818cf8;
+  background: #2980B9;
   border-radius: 0 3px 3px 0;
 }
 .nav-item .ni { flex-shrink: 0; width: 17px; height: 17px; opacity: .85; }
@@ -358,12 +541,12 @@ table { border-collapse: collapse; width: 100%; }
   background: var(--primary);
   color: #fff;
   border-color: var(--primary);
-  box-shadow: 0 2px 8px rgba(99,102,241,.3);
+  box-shadow: 0 2px 8px rgba(41,128,185,.3);
 }
 .btn-primary:hover {
   background: var(--primary-h);
   border-color: var(--primary-h);
-  box-shadow: 0 4px 16px rgba(99,102,241,.4);
+  box-shadow: 0 4px 16px rgba(41,128,185,.4);
   transform: translateY(-1px);
 }
 .btn-primary:active { transform: translateY(0); }
@@ -745,7 +928,7 @@ table { border-collapse: collapse; width: 100%; }
   background: var(--primary);
   border-color: var(--primary);
   color: #fff;
-  box-shadow: 0 2px 8px rgba(99,102,241,.3);
+  box-shadow: 0 2px 8px rgba(41,128,185,.3);
 }
 
 .prod-grid {
@@ -1000,7 +1183,7 @@ table { border-collapse: collapse; width: 100%; }
 ═══════════════════════════════════════════════ */
 #userAvatar {
   background: linear-gradient(135deg, var(--primary), var(--primary-h)) !important;
-  box-shadow: 0 2px 8px rgba(99,102,241,.3);
+  box-shadow: 0 2px 8px rgba(41,128,185,.3);
   font-weight: 700 !important;
 }
 
@@ -1035,11 +1218,11 @@ table { border-collapse: collapse; width: 100%; }
 }
 .auth-logo {
   width: 64px; height: 64px;
-  background: linear-gradient(145deg, #3730a3 0%, #4f46e5 45%, #6366f1 100%);
+  background: linear-gradient(145deg, #002B47 0%, #1A5276 45%, #2980B9 100%);
   border-radius: 18px;
   display: flex; align-items: center; justify-content: center;
   margin: 0 auto 16px;
-  box-shadow: 0 4px 20px rgba(79,70,229,.55);
+  box-shadow: 0 4px 20px rgba(41,128,185,.55);
 }
 .auth-tabs { display: flex; gap: 0; margin-bottom: 20px; border-bottom: 1.5px solid var(--border); }
 .auth-tab {
@@ -1174,8 +1357,8 @@ table { border-collapse: collapse; width: 100%; }
         <svg width="30" height="30" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
           <rect x="6" y="22" width="36" height="20" rx="4" fill="rgba(255,255,255,0.22)"/>
           <rect x="10" y="8" width="28" height="16" rx="3" fill="rgba(255,255,255,0.9)"/>
-          <rect x="13" y="11" width="14" height="3" rx="1.5" fill="#6366f1"/>
-          <rect x="13" y="16" width="9" height="2" rx="1" fill="#a5b4fc"/>
+          <rect x="13" y="11" width="14" height="3" rx="1.5" fill="#2980B9"/>
+          <rect x="13" y="16" width="9" height="2" rx="1" fill="#AED6F1"/>
           <rect x="10" y="27" width="6" height="4" rx="1.5" fill="rgba(255,255,255,0.7)"/>
           <rect x="18" y="27" width="6" height="4" rx="1.5" fill="rgba(255,255,255,0.7)"/>
           <rect x="26" y="27" width="6" height="4" rx="1.5" fill="rgba(255,255,255,0.7)"/>
@@ -1183,8 +1366,8 @@ table { border-collapse: collapse; width: 100%; }
           <rect x="18" y="33" width="6" height="4" rx="1.5" fill="rgba(255,255,255,0.5)"/>
           <rect x="26" y="33" width="12" height="4" rx="1.5" fill="rgba(255,255,255,0.9)"/>
           <rect x="20" y="4" width="8" height="6" rx="1" fill="rgba(255,255,255,0.6)"/>
-          <rect x="22" y="5.5" width="4" height="1" rx="0.5" fill="rgba(99,102,241,0.6)"/>
-          <rect x="21" y="7" width="6" height="1" rx="0.5" fill="rgba(99,102,241,0.4)"/>
+          <rect x="22" y="5.5" width="4" height="1" rx="0.5" fill="rgba(41,128,185,0.6)"/>
+          <rect x="21" y="7" width="6" height="1" rx="0.5" fill="rgba(41,128,185,0.4)"/>
         </svg>
       </div>
       <h2 style="font-size:22px;font-weight:800;letter-spacing:-.03em;color:var(--text);margin-bottom:4px;">AlphaPOS Cloud</h2>
@@ -1234,8 +1417,8 @@ table { border-collapse: collapse; width: 100%; }
       <svg id="sbLogoSvg" width="26" height="26" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
         <rect x="6" y="22" width="36" height="20" rx="4" fill="rgba(255,255,255,0.22)"/>
         <rect x="10" y="8" width="28" height="16" rx="3" fill="rgba(255,255,255,0.9)"/>
-        <rect x="13" y="11" width="14" height="3" rx="1.5" fill="#6366f1"/>
-        <rect x="13" y="16" width="9" height="2" rx="1" fill="#a5b4fc"/>
+        <rect x="13" y="11" width="14" height="3" rx="1.5" fill="#2980B9"/>
+        <rect x="13" y="16" width="9" height="2" rx="1" fill="#AED6F1"/>
         <rect x="10" y="27" width="6" height="4" rx="1.5" fill="rgba(255,255,255,0.7)"/>
         <rect x="18" y="27" width="6" height="4" rx="1.5" fill="rgba(255,255,255,0.7)"/>
         <rect x="26" y="27" width="6" height="4" rx="1.5" fill="rgba(255,255,255,0.7)"/>
@@ -1243,13 +1426,13 @@ table { border-collapse: collapse; width: 100%; }
         <rect x="18" y="33" width="6" height="4" rx="1.5" fill="rgba(255,255,255,0.5)"/>
         <rect x="26" y="33" width="12" height="4" rx="1.5" fill="rgba(255,255,255,0.9)"/>
         <rect x="20" y="4" width="8" height="6" rx="1" fill="rgba(255,255,255,0.6)"/>
-        <rect x="22" y="5.5" width="4" height="1" rx="0.5" fill="rgba(99,102,241,0.6)"/>
-        <rect x="21" y="7" width="6" height="1" rx="0.5" fill="rgba(99,102,241,0.4)"/>
+        <rect x="22" y="5.5" width="4" height="1" rx="0.5" fill="rgba(41,128,185,0.6)"/>
+        <rect x="21" y="7" width="6" height="1" rx="0.5" fill="rgba(41,128,185,0.4)"/>
       </svg>
     </div>
     <div>
       <div class="sb-logo-text" id="sbBizName">My Business</div>
-      <div class="sb-logo-sub">AlphaPOS Cloud v2.0</div>
+      <div class="sb-logo-sub">AlphaPOS Cloud v3.0</div>
     </div>
   </div>
   <nav class="sb-nav">
@@ -1350,7 +1533,7 @@ table { border-collapse: collapse; width: 100%; }
       <div class="pos-left" id="posLeftPane">
         <div class="flex gap-3 items-center">
           <div class="srch" style="flex:1;"><i data-lucide="search" class="srch-ic"></i><input type="text" class="fc" id="posSearch" placeholder="Search product or scan barcode..." oninput="renderPosProducts()"></div>
-          <button type="button" onclick="openPosBarcodeScanner()" title="Scan barcode to add product" style="flex-shrink:0;width:44px;height:44px;border-radius:var(--r-md);background:var(--primary);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all var(--tr);box-shadow:0 2px 8px rgba(99,102,241,.3);" onmouseover="this.style.background='var(--primary-d)';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='var(--primary)';this.style.transform=''">
+          <button type="button" onclick="openPosBarcodeScanner()" title="Scan barcode to add product" style="flex-shrink:0;width:44px;height:44px;border-radius:var(--r-md);background:var(--primary);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all var(--tr);box-shadow:0 2px 8px rgba(41,128,185,.3);" onmouseover="this.style.background='var(--primary-d)';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='var(--primary)';this.style.transform=''">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="3" y1="12" x2="21" y2="12"/></svg>
           </button>
           <button class="btn btn-secondary btn-sm" onclick="openModal('customerModal')"><i data-lucide="user"></i> Customer</button>
@@ -1551,6 +1734,12 @@ table { border-collapse: collapse; width: 100%; }
     <div class="tab-pane" id="stab2">
       <div class="card" style="max-width:560px;">
         <div style="display:flex;flex-direction:column;gap:16px;">
+          <div class="flex items-center justify-between"><div><div style="font-weight:600;font-size:14px;">UI Theme</div><div style="font-size:12px;color:var(--muted);">Choose your POS interface style</div></div>
+            <select class="fc" id="uiThemeSelect" onchange="applyUiTheme(this.value)" style="width:140px;">
+              <option value="classic">Classic</option>
+              <option value="retail">Retail (Large)</option>
+            </select>
+          </div>
           <div class="flex items-center justify-between"><div><div style="font-weight:600;font-size:14px;">Show Low Stock Warning</div><div style="font-size:12px;color:var(--muted);">Alert when stock goes below threshold</div></div><label class="tog"><input type="checkbox" id="togLowStock" checked><span class="tog-sl"></span></label></div>
           <div class="flex items-center justify-between"><div><div style="font-weight:600;font-size:14px;">Print Receipt After Sale</div><div style="font-size:12px;color:var(--muted);">Auto open print dialog</div></div><label class="tog"><input type="checkbox" id="togAutoPrint"><span class="tog-sl"></span></label></div>
           <div class="flex items-center justify-between"><div><div style="font-weight:600;font-size:14px;">Customer Management</div><div style="font-size:12px;color:var(--muted);">Enable customer tracking</div></div><label class="tog"><input type="checkbox" id="togCustomers" checked><span class="tog-sl"></span></label></div>
@@ -1563,11 +1752,11 @@ table { border-collapse: collapse; width: 100%; }
     <div class="tab-pane" id="stab3">
       <div class="card" style="max-width:560px;">
         <h3 style="font-size:15px;font-weight:700;margin-bottom:12px;">Backup & Restore</h3>
-        <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Export all your POS data as a JSON file to keep it safe. Import it any time to restore.</p>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Export all your POS data as an Excel file to keep it safe. Import it any time to restore.</p>
         <div class="flex gap-3" style="flex-wrap:wrap;">
-          <button class="btn btn-primary" onclick="exportBackup()"><i data-lucide="download"></i> Export Backup (JSON)</button>
+          <button class="btn btn-primary" onclick="exportBackup()"><i data-lucide="download"></i> Export Backup (Excel)</button>
           <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()"><i data-lucide="upload"></i> Import Backup</button>
-          <input type="file" id="importFile" accept=".json" style="display:none;" onchange="importBackup(event)">
+          <input type="file" id="importFile" accept=".xlsx,.xls" style="display:none;" onchange="importBackup(event)">
         </div>
         <div style="margin-top:20px;border-top:1px solid var(--div);padding-top:16px;">
           <h4 style="font-size:14px;font-weight:700;color:var(--err);margin-bottom:8px;">Danger Zone</h4>
@@ -2067,6 +2256,13 @@ function toggleTheme() {
   try { localStorage.setItem('pos_theme', t); } catch (e) { }
 }
 
+function applyUiTheme(theme) {
+  document.documentElement.setAttribute('data-ui-theme', theme === 'retail' ? 'retail' : '');
+  try { localStorage.setItem('pos_ui_theme', theme); } catch(e){}
+  const sel = document.getElementById('uiThemeSelect');
+  if (sel) sel.value = theme;
+}
+
 // ============================================================
 // PAGE ROUTING
 // ============================================================
@@ -2245,7 +2441,8 @@ function openPayModal(method) {
   if (!cart.length) { toast('Cart is empty', 'wa'); return; }
   posPayMethod = method;
   document.getElementById('payMethod').value = method;
-  document.getElementById('payModalTitle').textContent = method === 'cash' ? 'Cash Payment' : 'Card Payment';
+  const T = window.posT || (k=>k);
+  document.getElementById('payModalTitle').textContent = method === 'cash' ? T('cashPayment') : T('cardPayment');
   const _sub = cart.reduce((a, i) => a + i.subtotal, 0);
   const _dv = parseFloat(document.getElementById('discountInput')?.value || 0) || 0;
   const _dt = document.getElementById('discountType')?.value || 'fixed';
@@ -2310,34 +2507,39 @@ function completeSale() {
 
 function showReceipt(order) {
   const s = S() || {};
+  const T = window.posT || (k=>k);
   const r = document.getElementById('receiptContent');
+  const payLabel = order.payMethod === 'cash' ? T('cash') : order.payMethod === 'card' ? T('card') : order.payMethod;
   r.innerHTML = `
     ${s.logoImg ? `<div class='r-center'><img src='${s.logoImg}' style='width:70px;height:70px;object-fit:contain;margin:0 auto 6px;border-radius:8px;display:block;' alt='logo'></div>` : ''}
     <div class="r-center"><strong style="font-size:16px;">${s.bizName || 'My Business'}</strong></div>
     <div class="r-center">${s.address || ''}</div>
     <div class="r-center">${s.phone || ''}</div>
     <hr>
-    <div class="r-row"><span>Order #${order.num}</span><span>${order.date}</span></div>
+    <div class="r-row"><span>${T('order')}${order.num}</span><span>${order.date}</span></div>
     <div class="r-row"><span>${order.datetime}</span></div>
-    ${order.custName ? `<div>Customer: ${order.custName}</div>` : ''}
+    ${order.custName ? `<div>${T('customer')} ${order.custName}</div>` : ''}
     <hr>
-    ${order.items.map(i => `<div class="r-row"><span>${i.name} x${i.qty}${i.discount > 0 ? ' <small style="color:#e74c3c;">(' + i.discount + '% off)</small>' : ''}</span><span>${fmt(i.subtotal)}</span></div>`).join('')}
+    ${order.items.map(i => `<div class="r-row"><span>${i.name} x${i.qty}${i.discount > 0 ? ' <small style="color:#e74c3c;">(' + i.discount + '% ' + T('off') + ')</small>' : ''}</span><span>${fmt(i.subtotal)}</span></div>`).join('')}
     <hr>
-    <div class="r-row"><span>Subtotal</span><span>${fmt(order.subtotal)}</span></div>
-    ${order.discount > 0 ? `<div class="r-row"><span>Discount</span><span>- ${fmt(order.discount)}</span></div>` : ''}
-    ${order.tax > 0 ? `<div class="r-row"><span>Tax</span><span>${fmt(order.tax)}</span></div>` : ''}
-    <div class="r-row"><strong>TOTAL</strong><strong>${fmt(order.total)}</strong></div>
-    <div class="r-row"><span>Paid (${order.payMethod})</span><span>${fmt(order.tendered)}</span></div>
-    ${order.change > 0 ? `<div class="r-row"><span>Change</span><span>${fmt(order.change)}</span></div>` : ''}
+    <div class="r-row"><span>${T('subtotal')}</span><span>${fmt(order.subtotal)}</span></div>
+    ${order.discount > 0 ? `<div class="r-row"><span>${T('discount')}</span><span>- ${fmt(order.discount)}</span></div>` : ''}
+    ${order.tax > 0 ? `<div class="r-row"><span>${T('tax')}</span><span>${fmt(order.tax)}</span></div>` : ''}
+    <div class="r-row"><strong>${T('total')}</strong><strong>${fmt(order.total)}</strong></div>
+    <div class="r-row"><span>${T('paid')} (${payLabel})</span><span>${fmt(order.tendered)}</span></div>
+    ${order.change > 0 ? `<div class="r-row"><span>${T('change')}</span><span>${fmt(order.change)}</span></div>` : ''}
     <hr>
-    <div class="r-center">${s.receiptFooter || 'Thank you!'}</div>`;
+    <div class="r-center">${s.receiptFooter || T('thankYou')}</div>`;
   openModal('receiptModal');
 }
 
 function printReceipt() {
   const content = document.getElementById('receiptContent').innerHTML;
+  const isSi = (window.posLang && window.posLang() === 'si');
+  const fontLink = isSi ? '<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;700&display=swap" rel="stylesheet">' : '';
+  const fontFamily = isSi ? "'Noto Sans Sinhala','Courier New',Courier,monospace" : "'Courier New',Courier,monospace";
   const w = window.open('', '_blank', 'width=250,height=700');
-  w.document.write(`<html><head><title>Receipt</title><style>@page{margin:0;size:58mm auto;}*{box-sizing:border-box;margin:0;padding:0;}body{font-family:'Courier New',Courier,monospace;font-size:11px;line-height:1.5;width:48mm;padding:3mm 2mm;color:#000;background:#fff;}.r-center{text-align:center;}.r-row{display:flex;justify-content:space-between;width:100%;}.r-row span:first-child{flex:1;}.r-row span:last-child{text-align:right;white-space:nowrap;}hr{border:none;border-top:1px dashed #000;margin:3px 0;}strong{font-weight:bold;}img{max-width:20mm;height:auto;}.r-center strong{font-size:13px;}.cut-line{text-align:center;margin-top:6px;font-size:10px;letter-spacing:2px;color:#999;}</style></head><body>${content}<div class="cut-line">- - - - - - - - - - - -</div></body></html>`);
+  w.document.write(`<html><head><title>Receipt</title>${fontLink}<style>@page{margin:0;size:58mm auto;}*{box-sizing:border-box;margin:0;padding:0;}body{font-family:${fontFamily};font-size:11px;line-height:1.5;width:48mm;padding:3mm 2mm;color:#000;background:#fff;}.r-center{text-align:center;}.r-row{display:flex;justify-content:space-between;width:100%;}.r-row span:first-child{flex:1;}.r-row span:last-child{text-align:right;white-space:nowrap;}hr{border:none;border-top:1px dashed #000;margin:3px 0;}strong{font-weight:bold;}img{max-width:20mm;height:auto;}.r-center strong{font-size:13px;}.cut-line{text-align:center;margin-top:6px;font-size:10px;letter-spacing:2px;color:#999;}</style></head><body>${content}<div class="cut-line">- - - - - - - - - - - -</div></body></html>`);
   w.document.close(); w.focus(); setTimeout(function () { w.print(); }, 600);
 }
 
@@ -2697,6 +2899,8 @@ function loadSettings() {
   document.getElementById('setLowStockVal').value = s.lowStock || 5;
   if (s.logoImg) { setLogoPreview(s.logoImg); }
   else { document.getElementById('logoThumb').style.display = 'none'; document.getElementById('logoPlaceholder').style.display = 'flex'; document.getElementById('logoRemoveBtn').style.display = 'none'; }
+  const uiSel = document.getElementById('uiThemeSelect');
+  if (uiSel) uiSel.value = localStorage.getItem('pos_ui_theme') || 'classic';
   lucide.createIcons();
 }
 
@@ -2731,12 +2935,39 @@ function savePosSettings() {
 // BACKUP & RESTORE
 // ============================================================
 function exportBackup() {
-  const data = { settings: DB.get('settings'), categories: DB.get('categories'), products: DB.get('products'), orders: DB.get('orders'), customers: DB.get('customers'), suppliers: DB.get('suppliers'), debts: DB.get('debts'), nextId: DB.get('nextId'), exportedAt: new Date().toISOString() };
-  const a = document.createElement('a');
-  a.href = 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data, null, 2));
-  a.download = `alphapos_backup_${today()}.json`;
-  a.click();
-  toast('Backup exported!', 'ok');
+  const wb = XLSX.utils.book_new();
+  const keys = ['settings', 'categories', 'products', 'orders', 'customers', 'suppliers', 'debts', 'nextId'];
+  keys.forEach(key => {
+    const raw = DB.get(key);
+    let rows;
+    if (Array.isArray(raw)) {
+      if (raw.length === 0) { rows = [{ _empty: '' }]; }
+      else {
+        rows = raw.map(item => {
+          const flat = {};
+          Object.keys(item).forEach(k => {
+            const v = item[k];
+            flat[k] = (typeof v === 'object' && v !== null) ? JSON.stringify(v) : v;
+          });
+          return flat;
+        });
+      }
+    } else if (raw && typeof raw === 'object') {
+      rows = [{}];
+      Object.keys(raw).forEach(k => {
+        const v = raw[k];
+        rows[0][k] = (typeof v === 'object' && v !== null) ? JSON.stringify(v) : v;
+      });
+    } else {
+      rows = [{ value: raw }];
+    }
+    const ws = XLSX.utils.json_to_sheet(rows);
+    XLSX.utils.book_append_sheet(wb, ws, key.substring(0, 31));
+  });
+  const metaWs = XLSX.utils.json_to_sheet([{ exportedAt: new Date().toISOString(), version: 'AlphaPOS3' }]);
+  XLSX.utils.book_append_sheet(wb, metaWs, '_meta');
+  XLSX.writeFile(wb, `alphapos_backup_${today()}.xlsx`);
+  toast('Backup exported as Excel!', 'ok');
 }
 
 function importBackup(e) {
@@ -2745,21 +2976,34 @@ function importBackup(e) {
   const reader = new FileReader();
   reader.onload = ev => {
     try {
-      const data = JSON.parse(ev.target.result);
-      if (!confirm('This will replace ALL current data. Continue?')) return;
-      if (data.settings) DB.set('settings', data.settings);
-      if (data.categories) DB.set('categories', data.categories);
-      if (data.products) DB.set('products', data.products);
-      if (data.orders) DB.set('orders', data.orders);
-      if (data.customers) DB.set('customers', data.customers);
-      if (data.suppliers) DB.set('suppliers', data.suppliers);
-      if (data.debts) DB.set('debts', data.debts);
-      if (data.nextId) DB.set('nextId', data.nextId);
+      const wb = XLSX.read(ev.target.result, { type: 'array' });
+      if (!confirm('This will replace ALL current data. Continue?')) { e.target.value = ''; return; }
+      const keys = ['settings', 'categories', 'products', 'orders', 'customers', 'suppliers', 'debts', 'nextId'];
+      keys.forEach(key => {
+        const ws = wb.Sheets[key];
+        if (!ws) return;
+        const rows = XLSX.utils.sheet_to_json(ws);
+        if (!rows.length) return;
+        if (key === 'nextId') {
+          DB.set(key, rows[0].value);
+        } else if (key === 'settings') {
+          const obj = rows[0];
+          Object.keys(obj).forEach(k => { try { const p = JSON.parse(obj[k]); if (typeof p === 'object') obj[k] = p; } catch(_){} });
+          DB.set(key, obj);
+        } else {
+          const arr = rows.map(row => {
+            Object.keys(row).forEach(k => { try { const p = JSON.parse(row[k]); if (typeof p === 'object') row[k] = p; } catch(_){} });
+            return row;
+          });
+          DB.set(key, arr);
+        }
+      });
       toast('Backup restored & synced to cloud!', 'ok');
       setTimeout(() => location.reload(), 1000);
-    } catch (err) { toast('Invalid backup file', 'er'); }
+    } catch (err) { toast('Invalid backup file', 'er'); console.error(err); }
   };
-  reader.readAsText(file);
+  reader.readAsArrayBuffer(file);
+  e.target.value = '';
 }
 
 async function resetAllData() {
@@ -2886,11 +3130,11 @@ function createPosScannerModal() {
     <div style="position:relative;width:100%;aspect-ratio:4/3;background:#000;border-radius:var(--r-lg);overflow:hidden;margin-bottom:12px;border:2px solid var(--border);">
       <video id="posVideo" style="width:100%;height:100%;object-fit:cover;" autoplay muted playsinline></video>
       <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;">
-        <div style="width:70%;height:70%;border:2px solid rgba(99,102,241,.5);border-radius:var(--r-lg);position:relative;">
+        <div style="width:70%;height:70%;border:2px solid rgba(41,128,185,.5);border-radius:var(--r-lg);position:relative;">
           <div style="width:100%;height:2px;background:var(--primary);box-shadow:0 0 12px var(--primary);animation:scanLine 1.8s ease-in-out infinite;"></div>
         </div>
       </div>
-      <div id="posScanFlash" style="position:absolute;inset:0;background:rgba(99,102,241,.25);opacity:0;transition:opacity .15s;pointer-events:none;border-radius:var(--r-lg);"></div>
+      <div id="posScanFlash" style="position:absolute;inset:0;background:rgba(41,128,185,.25);opacity:0;transition:opacity .15s;pointer-events:none;border-radius:var(--r-lg);"></div>
     </div>
     <div id="posScanStatus" style="font-size:13px;color:var(--muted);margin-bottom:10px;text-align:center;font-weight:500;">Point camera at barcode...</div>
     <div id="posScanLog" style="max-height:140px;overflow-y:auto;margin-bottom:12px;padding:10px;background:var(--surface2);border-radius:var(--r-md);border:1px solid var(--border);">
@@ -2965,7 +3209,7 @@ function handlePosScan(code) {
     }
   } else {
     setPosStatus('No product found for: ' + code);
-    if (flash) { flash.style.background = 'rgba(220,38,38,.25)'; flash.style.opacity = '1'; setTimeout(() => { flash.style.opacity = '0'; flash.style.background = 'rgba(99,102,241,.25)'; }, 300); }
+    if (flash) { flash.style.background = 'rgba(220,38,38,.25)'; flash.style.opacity = '1'; setTimeout(() => { flash.style.opacity = '0'; flash.style.background = 'rgba(41,128,185,.25)'; }, 300); }
     try { const ctx = new AudioContext(); const o = ctx.createOscillator(); const g = ctx.createGain(); o.connect(g); g.connect(ctx.destination); o.frequency.value = 300; g.gain.setValueAtTime(0.3, ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3); o.start(ctx.currentTime); o.stop(ctx.currentTime + 0.3); } catch (e) { }
     if (log) {
       const first = log.querySelector('div[style]');
@@ -3286,23 +3530,27 @@ function printDebtSlip() {
   const debts = getDebts().filter(d => String(d.custId) === String(custId));
   if (!debts.length) return;
   const s = S() || {};
+  const T = window.posT || (k=>k);
+  const isSi = (window.posLang && window.posLang() === 'si');
+  const fontLink = isSi ? '<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;700&display=swap" rel="stylesheet">' : '';
+  const fontFamily = isSi ? "'Noto Sans Sinhala',monospace" : "monospace";
   const totalDebt = debts.reduce((a, d) => a + d.amount, 0);
   const totalPaid = debts.reduce((a, d) => a + (d.paid || 0), 0);
   const balance = totalDebt - totalPaid;
   const w = window.open('', '_blank', 'width=360,height=620');
-  w.document.write(`<html><head><title>Debt Slip</title><style>body{font-family:monospace;font-size:13px;padding:16px;}hr{border:none;border-top:1px dashed #999;margin:8px 0;}table{width:100%;font-size:12px;}th,td{text-align:left;padding:2px 0;}</style></head><body>
+  w.document.write(`<html><head><title>${T('debtSlip')}</title>${fontLink}<style>body{font-family:${fontFamily};font-size:13px;padding:16px;}hr{border:none;border-top:1px dashed #999;margin:8px 0;}table{width:100%;font-size:12px;}th,td{text-align:left;padding:2px 0;}</style></head><body>
     <div style="text-align:center;"><b style="font-size:16px;">${s.bizName || 'My Business'}</b><br>${s.phone || ''}<br>${s.address || ''}</div>
-    <hr><div style="text-align:center;font-size:15px;font-weight:700;">DEBT SLIP</div><hr>
-    <div><b>Customer:</b> ${debts[0].custName}</div>
-    ${debts[0].custPhone ? '<div><b>Phone:</b> ' + debts[0].custPhone + '</div>' : ''}
-    <div><b>Date:</b> ${new Date().toLocaleDateString()}</div><hr>
-    <table><tr><th>Date</th><th>Amount</th><th>Paid</th><th>Balance</th></tr>
+    <hr><div style="text-align:center;font-size:15px;font-weight:700;">${T('debtSlip')}</div><hr>
+    <div><b>${T('customer')}</b> ${debts[0].custName}</div>
+    ${debts[0].custPhone ? '<div><b>' + T('phone') + '</b> ' + debts[0].custPhone + '</div>' : ''}
+    <div><b>${T('date')}</b> ${new Date().toLocaleDateString()}</div><hr>
+    <table><tr><th>${T('date')}</th><th>${T('amount')}</th><th>${T('paid')}</th><th>${T('balance')}</th></tr>
     ${debts.map(d => `<tr><td>${d.date}</td><td>${fmt(d.amount)}</td><td>${fmt(d.paid || 0)}</td><td>${fmt(d.amount - (d.paid || 0))}</td></tr>`).join('')}
     </table><hr>
-    <div style="display:flex;justify-content:space-between;"><span>Total Debt:</span><b>${fmt(totalDebt)}</b></div>
-    <div style="display:flex;justify-content:space-between;"><span>Total Paid:</span><b>${fmt(totalPaid)}</b></div>
-    <div style="display:flex;justify-content:space-between;font-size:15px;"><b>Balance Due:</b><b>${fmt(balance)}</b></div>
-    <hr><div style="text-align:center;">${s.receiptFooter || 'Thank you!'}</div>
+    <div style="display:flex;justify-content:space-between;"><span>${T('totalDebt')}</span><b>${fmt(totalDebt)}</b></div>
+    <div style="display:flex;justify-content:space-between;"><span>${T('totalPaid')}</span><b>${fmt(totalPaid)}</b></div>
+    <div style="display:flex;justify-content:space-between;font-size:15px;"><b>${T('balanceDue')}</b><b>${fmt(balance)}</b></div>
+    <hr><div style="text-align:center;">${s.receiptFooter || T('thankYou')}</div>
   </body></html>`);
   w.document.close(); w.focus(); w.print(); w.close();
 }
@@ -3370,6 +3618,8 @@ window.addEventListener('resize', function () {
 document.addEventListener('DOMContentLoaded', () => {
   const t = localStorage.getItem('pos_theme') || (matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light');
   document.documentElement.setAttribute('data-theme', t);
+  const uiT = localStorage.getItem('pos_ui_theme') || 'classic';
+  if (uiT === 'retail') document.documentElement.setAttribute('data-ui-theme', 'retail');
   const tb = document.getElementById('themeBtn');
   tb.innerHTML = t === 'dark' ? '<i data-lucide="sun"></i>' : '<i data-lucide="moon"></i>';
   lucide.createIcons();
@@ -3424,26 +3674,27 @@ document.addEventListener('DOMContentLoaded', () => {
   var enItems=["Dashboard","POS / Cashier","Products","Categories","Suppliers","Debt Book","Orders","Customers","Reports","Settings"];
   var siStats=["අද ළකුණුම්","අද ඇණවුම්","මුළු භාණ්ඩ","අඩු තෝග","මුළු පාරිභෝගිකයන්","සියලු කාල"];
   var enStats=["Today's Sales","Today's Orders","Total Products","Low Stock Items","Total Customers","All Time Sales"];
+  var receiptTranslations = {
+    en: { order:"Order #", customer:"Customer:", subtotal:"Subtotal", discount:"Discount", tax:"Tax", total:"TOTAL", paid:"Paid", change:"Change", cash:"cash", card:"card", receipt:"Receipt", cashPayment:"Cash Payment", cardPayment:"Card Payment", debtSlip:"DEBT SLIP", phone:"Phone:", date:"Date:", totalDebt:"Total Debt:", totalPaid:"Total Paid:", balanceDue:"Balance Due:", amount:"Amount", balance:"Balance", note:"Note", thankYou:"Thank you!", off:"off", close:"Close", print:"Print", del:"Del" },
+    si: { order:"ඇණවුම #", customer:"පාරිභෝගිකයා:", subtotal:"උප එකතුව", discount:"වට්ටම", tax:"බදු", total:"මුළු එකතුව", paid:"ගෙවීම", change:"ඉතිරි", cash:"මුදල්", card:"කාඩ්", receipt:"රිසිට්පත", cashPayment:"මුදල් ගෙවීම", cardPayment:"කාඩ් ගෙවීම", debtSlip:"ණය පත්‍රය", phone:"දුරකතන:", date:"දිනය:", totalDebt:"මුළු ණය:", totalPaid:"මුළු ගෙවීම:", balanceDue:"ඉතිරි ණය:", amount:"මුදල", balance:"ශේෂය", note:"සටහන", thankYou:"ස්තූතියි!", off:"වට්ටම", close:"වසන්න", print:"මුද්‍රණය", del:"මකන්න" }
+  };
   function gl(){return localStorage.getItem("pos_lang")||"en";}
   function sl(l){localStorage.setItem("pos_lang",l);}
+  window.posLang=gl;
+  window.posT=function(key){var l=gl();return (receiptTranslations[l]||receiptTranslations.en)[key]||key;};
   function updateBtn(l){var f=document.getElementById("lbf"),b=document.getElementById("lbl");if(!f)return;if(l==="si"){f.innerHTML="&#x1F1F1;&#x1F1F0;";b.textContent="SI";}else{f.innerHTML="&#x1F1EC;&#x1F1E7;";b.textContent="EN";}}
   function applyFont(l){if(l==="si"){if(!document.getElementById("_nss")){var k=document.createElement("link");k.id="_nss";k.rel="stylesheet";k.href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;700&display=swap";document.head.appendChild(k);}document.body.style.fontFamily="'Noto Sans Sinhala',sans-serif";}else{document.body.style.fontFamily="";}}
   function applyUI(l){
-    var nav=l==="si"?siNav:enNav;
-    var items=l==="si"?siItems:enItems;
-    var stats=l==="si"?siStats:enStats;
+    var nav=l==="si"?siNav:enNav;var items=l==="si"?siItems:enItems;var stats=l==="si"?siStats:enStats;
     try{var nl=document.querySelectorAll(".nav-label");nav.forEach(function(v,i){if(nl[i])nl[i].textContent=v;});}catch(e){}
     try{var ni=document.querySelectorAll(".sb-nav .nav-item span,.sb-footer .nav-item span");items.forEach(function(v,i){if(ni[i])ni[i].textContent=v;});}catch(e){}
     try{var sl2=document.querySelectorAll("#dashPage .stat-lbl");stats.forEach(function(v,i){if(sl2[i])sl2[i].textContent=v;});}catch(e){}
-    try{var ap=document.querySelector(".page.active");var pgMap={dashPage:l==="si"?"උපකරණ පුවරුව":"Dashboard",posPage:l==="si"?"POS / අයකැමි":"POS / Cashier",productsPage:l==="si"?"භාණ්ඩ":"Products",categoriesPage:l==="si"?"කාණ්ඩ":"Categories",suppliersPage:l==="si"?"සැපයුම්කරුවන්":"Suppliers",debtbookPage:l==="si"?"ණය පෝත":"Debt Book",ordersPage:l==="si"?"ඇණවුම්":"Orders",customersPage:l==="si"?"පාරිභෝගිකයන්":"Customers",reportsPage:l==="si"?"වාර්තා":"Reports",settingsPage:l==="si"?"සැකසුම්":"Settings"};if(ap&&pgMap[ap.id]){var pt=document.getElementById("pageTitle");if(pt)pt.textContent=pgMap[ap.id];}}catch(e){}
-    try{var phs={posSearch:l==="si"?"භාණ්ඩයක් සෝයන්න...":"Search product or scan barcode...",prodSearch:l==="si"?"භාණ්ඩ සෝයන්...":"Search products...",ordSearch:l==="si"?"ඇණවුම් සෝයන්...":"Search orders...",custSearch:l==="si"?"පාරිභෝගිකයන් සෝයන්...":"Search customers...",supplierSearch:l==="si"?"සැපයුම්කරුවන් සෝයන්...":"Search suppliers...",dbSearch:l==="si"?"ණය පාරිභෝගිකයන් සෝයන්...":"Search debt customers..."};Object.keys(phs).forEach(function(id){var el=document.getElementById(id);if(el)el.placeholder=phs[id];});}catch(e){}
     try{if(typeof lucide!=="undefined")lucide.createIcons();}catch(e){}
   }
   window.posToggleLang=function(){
     var next=gl()==="en"?"si":"en";
     sl(next);updateBtn(next);applyFont(next);applyUI(next);
-    var w=document.getElementById("toastWrap");
-    if(w){var d=document.createElement("div");d.className="toast ok";d.innerHTML="<span>"+(next==="si"?"සිංහල භා෇ාවවට මාරු විය":"Switched to English")+"</span>";w.appendChild(d);setTimeout(function(){d.remove();},3000);}
+    toast(next==="si"?"සිංහල භාෂාවට මාරු විය":"Switched to English","ok");
   };
   var _sp=window.showPage;
   if(typeof _sp==="function"){window.showPage=function(n){_sp(n);setTimeout(function(){applyUI(gl());},80);};}
