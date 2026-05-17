@@ -3429,16 +3429,21 @@ document.addEventListener('DOMContentLoaded', () => {
   function updateBtn(l){var f=document.getElementById("lbf"),b=document.getElementById("lbl");if(!f)return;if(l==="si"){f.innerHTML="&#x1F1F1;&#x1F1F0;";b.textContent="SI";}else{f.innerHTML="&#x1F1EC;&#x1F1E7;";b.textContent="EN";}}
   function applyFont(l){if(l==="si"){if(!document.getElementById("_nss")){var k=document.createElement("link");k.id="_nss";k.rel="stylesheet";k.href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;700&display=swap";document.head.appendChild(k);}document.body.style.fontFamily="'Noto Sans Sinhala',sans-serif";}else{document.body.style.fontFamily="";}}
   function applyUI(l){
-    var nav=l==="si"?siNav:enNav;var items=l==="si"?siItems:enItems;var stats=l==="si"?siStats:enStats;
+    var nav=l==="si"?siNav:enNav;
+    var items=l==="si"?siItems:enItems;
+    var stats=l==="si"?siStats:enStats;
     try{var nl=document.querySelectorAll(".nav-label");nav.forEach(function(v,i){if(nl[i])nl[i].textContent=v;});}catch(e){}
     try{var ni=document.querySelectorAll(".sb-nav .nav-item span,.sb-footer .nav-item span");items.forEach(function(v,i){if(ni[i])ni[i].textContent=v;});}catch(e){}
     try{var sl2=document.querySelectorAll("#dashPage .stat-lbl");stats.forEach(function(v,i){if(sl2[i])sl2[i].textContent=v;});}catch(e){}
+    try{var ap=document.querySelector(".page.active");var pgMap={dashPage:l==="si"?"උපකරණ පුවරුව":"Dashboard",posPage:l==="si"?"POS / අයකැමි":"POS / Cashier",productsPage:l==="si"?"භාණ්ඩ":"Products",categoriesPage:l==="si"?"කාණ්ඩ":"Categories",suppliersPage:l==="si"?"සැපයුම්කරුවන්":"Suppliers",debtbookPage:l==="si"?"ණය පෝත":"Debt Book",ordersPage:l==="si"?"ඇණවුම්":"Orders",customersPage:l==="si"?"පාරිභෝගිකයන්":"Customers",reportsPage:l==="si"?"වාර්තා":"Reports",settingsPage:l==="si"?"සැකසුම්":"Settings"};if(ap&&pgMap[ap.id]){var pt=document.getElementById("pageTitle");if(pt)pt.textContent=pgMap[ap.id];}}catch(e){}
+    try{var phs={posSearch:l==="si"?"භාණ්ඩයක් සෝයන්න...":"Search product or scan barcode...",prodSearch:l==="si"?"භාණ්ඩ සෝයන්...":"Search products...",ordSearch:l==="si"?"ඇණවුම් සෝයන්...":"Search orders...",custSearch:l==="si"?"පාරිභෝගිකයන් සෝයන්...":"Search customers...",supplierSearch:l==="si"?"සැපයුම්කරුවන් සෝයන්...":"Search suppliers...",dbSearch:l==="si"?"ණය පාරිභෝගිකයන් සෝයන්...":"Search debt customers..."};Object.keys(phs).forEach(function(id){var el=document.getElementById(id);if(el)el.placeholder=phs[id];});}catch(e){}
     try{if(typeof lucide!=="undefined")lucide.createIcons();}catch(e){}
   }
   window.posToggleLang=function(){
     var next=gl()==="en"?"si":"en";
     sl(next);updateBtn(next);applyFont(next);applyUI(next);
-    toast(next==="si"?"සිංහල භාෂාවට මාරු විය":"Switched to English","ok");
+    var w=document.getElementById("toastWrap");
+    if(w){var d=document.createElement("div");d.className="toast ok";d.innerHTML="<span>"+(next==="si"?"සිංහල භා෇ාවවට මාරු විය":"Switched to English")+"</span>";w.appendChild(d);setTimeout(function(){d.remove();},3000);}
   };
   var _sp=window.showPage;
   if(typeof _sp==="function"){window.showPage=function(n){_sp(n);setTimeout(function(){applyUI(gl());},80);};}
