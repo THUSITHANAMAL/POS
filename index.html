@@ -3033,7 +3033,7 @@ function createScannerModal() {
   const div = document.createElement('div');
   div.id = 'barcodeScannerModal';
   div.style.cssText = 'display:flex;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;flex-direction:column;align-items:center;justify-content:center;';
-  div.innerHTML = <div style="background:var(--surface);border-radius:var(--r-xl);padding:20px;width:min(370px,95vw);text-align:center;">
+  div.innerHTML = `<div style="background:var(--surface);border-radius:var(--r-xl);padding:20px;width:min(370px,95vw);text-align:center;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
       <div style="font-size:15px;font-weight:700;">Scan Barcode</div>
       <button onclick="closeBarcodeScanner()" style="width:30px;height:30px;border-radius:50%;background:var(--surface2);border:none;cursor:pointer;font-size:20px;font-weight:700;color:var(--muted);">x</button>
@@ -3049,10 +3049,11 @@ function createScannerModal() {
       <button onclick="closeBarcodeScanner()" class="btn btn-secondary" style="flex:1;">Cancel</button>
       <button onclick="flipCamera()" class="btn btn-primary" style="flex:1;">Flip Camera</button>
     </div>
-  </div>;
+  </div>`;
   document.body.appendChild(div);
   startCamera();
 }
+
 async function startCamera() {
   try {
     if (barcodeStream) { barcodeStream.getTracks().forEach(t => t.stop()); }
@@ -3101,12 +3102,10 @@ function closeBarcodeScanner() {
   if (modal) modal.style.display = 'none';
 }
 
-// ============================================================ 
+// ============================================================
 // POS BARCODE SCANNER — Scan to add products to cart
 // ============================================================
 let posStream = null, posDetector = null, posScanActive = false, posUseFront = false, posLastScan = 0;
-let lastScannedBarcode = "";
-let lastScanBarcodeTime = 0;
 
 function openPosBarcodeScanner() {
   const modal = document.getElementById('posScannerModal');
@@ -3120,7 +3119,7 @@ function createPosScannerModal() {
   const div = document.createElement('div');
   div.id = 'posScannerModal';
   div.style.cssText = 'display:flex;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:9999;flex-direction:column;align-items:center;justify-content:center;padding:12px;';
-  div.innerHTML = <div style="background:var(--surface);border-radius:var(--r-2xl);padding:20px;width:min(400px,95vw);max-height:95vh;overflow-y:auto;">
+  div.innerHTML = `<div style="background:var(--surface);border-radius:var(--r-2xl);padding:20px;width:min(400px,95vw);max-height:95vh;overflow-y:auto;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
       <div>
         <div style="font-size:16px;font-weight:800;letter-spacing:-.02em;">POS Scanner</div>
@@ -3145,7 +3144,7 @@ function createPosScannerModal() {
       <button onclick="closePosBarcodeScanner()" class="btn btn-secondary" style="flex:1;">Done</button>
       <button onclick="flipPosCamera()" class="btn btn-primary" style="flex:1;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:middle;margin-right:4px;"><path d="M16 3h5v5M8 3H3v5M3 16v5h5M21 16v5h-5"/><path d="M21 3l-7 7M3 21l7-7"/></svg>Flip Camera</button>
     </div>
-  </div>;
+  </div>`;
   document.body.appendChild(div);
   startPosCamera();
 }
@@ -3176,23 +3175,14 @@ async function detectPosFrame() {
   const video = document.getElementById('posVideo');
   if (!video || video.readyState < 2) { requestAnimationFrame(detectPosFrame); return; }
   try {
-    if (!posDetector) return;
     const barcodes = await posDetector.detect(video);
     if (barcodes.length > 0) {
       const code = barcodes[0].rawValue;
       const now = Date.now();
-      // Different barcode → scan immediately
-      if (code !== lastScannedBarcode) {
-        lastScannedBarcode = code;
-        lastScanBarcodeTime = now;
-        handlePosScan(code);
-      } 
-      // Same barcode but after 1 second → allow re‑scan (e.g. user wants another unit)
-      else if (now - lastScanBarcodeTime > 1000) {
-        lastScanBarcodeTime = now;
+      if (now - posLastScan > 1200) {
+        posLastScan = now;
         handlePosScan(code);
       }
-      // Otherwise ignore to prevent double‑add
     }
   } catch (e) { }
   if (posScanActive) requestAnimationFrame(detectPosFrame);
@@ -3239,10 +3229,8 @@ function closePosBarcodeScanner() {
   if (posStream) { posStream.getTracks().forEach(t => t.stop()); posStream = null; }
   const modal = document.getElementById('posScannerModal');
   if (modal) modal.style.display = 'none';
-  // Reset barcode memory when closing
-  lastScannedBarcode = "";
-  lastScanBarcodeTime = 0;
 }
+
 // ============================================================
 // IMAGE HANDLERS
 // ============================================================
