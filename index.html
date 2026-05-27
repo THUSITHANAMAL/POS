@@ -3240,8 +3240,10 @@ function closePosBarcodeScanner() {
   if (posStream) { posStream.getTracks().forEach(t => t.stop()); posStream = null; }
   const modal = document.getElementById('posScannerModal');
   if (modal) modal.style.display = 'none';
+  // Reset barcode memory when closing
+  lastScannedBarcode = "";
+  lastScanBarcodeTime = 0;
 }
-
 // ============================================================
 // IMAGE HANDLERS
 // ============================================================
