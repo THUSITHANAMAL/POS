@@ -3173,18 +3173,23 @@ function startPosDetection() {
 async function detectPosFrame() {
   if (!posScanActive) return;
   const video = document.getElementById('posVideo');
-  if (!video || video.readyState < 2) { requestAnimationFrame(detectPosFrame); return; }
+  if (!video || video.readyState < 2) { 
+    if (posScanActive) setTimeout(() => requestAnimationFrame(detectPosFrame), 100);
+    return; 
+  }
   try {
     const barcodes = await posDetector.detect(video);
     if (barcodes.length > 0) {
       const code = barcodes[0].rawValue;
       const now = Date.now();
-      if (now - posLastScan > 1200) {
+      if (now - posLastScan > 1500) {
         posLastScan = now;
         handlePosScan(code);
       }
     }
-  } catch (e) { }
+  } catch (e) { 
+    // silently continue — don't break the loop
+  }
   if (posScanActive) requestAnimationFrame(detectPosFrame);
 }
 
@@ -3195,12 +3200,22 @@ function handlePosScan(code) {
   const log = document.getElementById('posScanLog');
 
   if (p) {
-    addToCart(p.id);
+    // Add to cart directly without triggering renderPosProducts
+    const ex = cart.find(i => i.prodId === p.id);
+    if (ex) {
+      if (ex.qty < p.stock) { ex.qty++; ex.subtotal = ex.qty * ex.price; }
+      else { setPosStatus('Max stock reached for: ' + p.name); return; }
+    } else {
+      const _dp = p.discount > 0 ? parseFloat((p.price - (p.price * p.discount / 100)).toFixed(2)) : p.price;
+      cart.push({ prodId: p.id, name: p.name, price: _dp, originalPrice: p.price, discount: p.discount || 0, qty: 1, subtotal: _dp, unit: p.unit });
+    }
+    renderCart(); // only update cart, NOT product grid
+
     setPosStatus('Added: ' + p.name);
     if (flash) { flash.style.opacity = '1'; setTimeout(() => flash.style.opacity = '0', 200); }
     try { const ctx = new AudioContext(); const o = ctx.createOscillator(); const g = ctx.createGain(); o.connect(g); g.connect(ctx.destination); o.frequency.value = 1200; g.gain.setValueAtTime(0.3, ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15); o.start(ctx.currentTime); o.stop(ctx.currentTime + 0.15); } catch (e) { }
     if (log) {
-      const first = log.querySelector('div[style]');
+      const first = log.querySelector('div');
       if (first && first.textContent.includes('Scanned items')) first.remove();
       const entry = document.createElement('div');
       entry.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--div);font-size:12.5px;animation:fadeUp .2s ease;';
@@ -3212,7 +3227,7 @@ function handlePosScan(code) {
     if (flash) { flash.style.background = 'rgba(220,38,38,.25)'; flash.style.opacity = '1'; setTimeout(() => { flash.style.opacity = '0'; flash.style.background = 'rgba(41,128,185,.25)'; }, 300); }
     try { const ctx = new AudioContext(); const o = ctx.createOscillator(); const g = ctx.createGain(); o.connect(g); g.connect(ctx.destination); o.frequency.value = 300; g.gain.setValueAtTime(0.3, ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3); o.start(ctx.currentTime); o.stop(ctx.currentTime + 0.3); } catch (e) { }
     if (log) {
-      const first = log.querySelector('div[style]');
+      const first = log.querySelector('div');
       if (first && first.textContent.includes('Scanned items')) first.remove();
       const entry = document.createElement('div');
       entry.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--div);font-size:12.5px;color:var(--err);';
