@@ -3102,10 +3102,12 @@ function closeBarcodeScanner() {
   if (modal) modal.style.display = 'none';
 }
 
-// ============================================================
+// ============================================================ 
 // POS BARCODE SCANNER — Scan to add products to cart
 // ============================================================
 let posStream = null, posDetector = null, posScanActive = false, posUseFront = false, posLastScan = 0;
+let lastScannedBarcode = "";
+let lastScanBarcodeTime = 0;
 
 function openPosBarcodeScanner() {
   const modal = document.getElementById('posScannerModal');
@@ -3175,14 +3177,23 @@ async function detectPosFrame() {
   const video = document.getElementById('posVideo');
   if (!video || video.readyState < 2) { requestAnimationFrame(detectPosFrame); return; }
   try {
+    if (!posDetector) return;
     const barcodes = await posDetector.detect(video);
     if (barcodes.length > 0) {
       const code = barcodes[0].rawValue;
       const now = Date.now();
-      if (now - posLastScan > 1200) {
-        posLastScan = now;
+      // Different barcode → scan immediately
+      if (code !== lastScannedBarcode) {
+        lastScannedBarcode = code;
+        lastScanBarcodeTime = now;
+        handlePosScan(code);
+      } 
+      // Same barcode but after 1 second → allow re‑scan (e.g. user wants another unit)
+      else if (now - lastScanBarcodeTime > 1000) {
+        lastScanBarcodeTime = now;
         handlePosScan(code);
       }
+      // Otherwise ignore to prevent double‑add
     }
   } catch (e) { }
   if (posScanActive) requestAnimationFrame(detectPosFrame);
