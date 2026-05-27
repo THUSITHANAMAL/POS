@@ -1532,7 +1532,7 @@ table { border-collapse: collapse; width: 100%; }
     <div class="pos-grid">
       <div class="pos-left" id="posLeftPane">
         <div class="flex gap-3 items-center">
-          <div class="srch" style="flex:1;"><i data-lucide="search" class="srch-ic"></i><input type="text" class="fc" id="posSearch" placeholder="Search product or scan barcode..." oninput="handlePosSearch()" onkeydown="if(event.key==='Enter')handlePosSearchEnter()"><input type="text" class="fc" id="posSearch" placeholder="Search product or scan barcode..." oninput="renderPosProducts()"></div>
+          <div class="srch" style="flex:1;"><i data-lucide="search" class="srch-ic"></i><input type="text" class="fc" id="posSearch" placeholder="Search product or scan barcode..." oninput="renderPosProducts()"></div>
           <button type="button" onclick="openPosBarcodeScanner()" title="Scan barcode to add product" style="flex-shrink:0;width:44px;height:44px;border-radius:var(--r-md);background:var(--primary);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all var(--tr);box-shadow:0 2px 8px rgba(41,128,185,.3);" onmouseover="this.style.background='var(--primary-d)';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='var(--primary)';this.style.transform=''">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="3" y1="12" x2="21" y2="12"/></svg>
           </button>
@@ -3105,66 +3105,6 @@ function closeBarcodeScanner() {
 // ============================================================
 // POS BARCODE SCANNER — Scan to add products to cart
 // ============================================================
-
-let posSearchTimer = null;
-
-function handlePosSearch() {
-  clearTimeout(posSearchTimer);
-  renderPosProducts();
-  
-  const q = (document.getElementById('posSearch')?.value || '').trim();
-  
-  // If input looks like a barcode (numeric, 8+ digits), try to auto-match
-  if (/^\d{8,}$/.test(q)) {
-    posSearchTimer = setTimeout(() => {
-      const prods = DB.get('products') || [];
-      const match = prods.find(p => p.barcode === q && p.status);
-      if (match) {
-        // Add to cart directly without touching product grid
-        const ex = cart.find(i => i.prodId === match.id);
-        if (ex) {
-          if (ex.qty < match.stock) { ex.qty++; ex.subtotal = ex.qty * ex.price; }
-          else { toast('Max stock reached!', 'wa'); }
-        } else {
-          const _dp = match.discount > 0 
-            ? parseFloat((match.price - (match.price * match.discount / 100)).toFixed(2)) 
-            : match.price;
-          cart.push({ prodId: match.id, name: match.name, price: _dp, originalPrice: match.price, discount: match.discount || 0, qty: 1, subtotal: _dp, unit: match.unit });
-        }
-        renderCart();
-        toast(match.name + ' added', 'ok');
-        
-        // Clear search box and restore full product grid
-        document.getElementById('posSearch').value = '';
-        renderPosProducts();
-      }
-    }, 300); // 300ms debounce — waits for scanner to finish sending digits
-  }
-}
-
-function handlePosSearchEnter() {
-  const q = (document.getElementById('posSearch')?.value || '').trim();
-  const prods = DB.get('products') || [];
-  const match = prods.find(p => p.barcode === q && p.status);
-  if (match) {
-    const ex = cart.find(i => i.prodId === match.id);
-    if (ex) {
-      if (ex.qty < match.stock) { ex.qty++; ex.subtotal = ex.qty * ex.price; }
-      else { toast('Max stock reached!', 'wa'); }
-    } else {
-      const _dp = match.discount > 0 
-        ? parseFloat((match.price - (match.price * match.discount / 100)).toFixed(2)) 
-        : match.price;
-      cart.push({ prodId: match.id, name: match.name, price: _dp, originalPrice: match.price, discount: match.discount || 0, qty: 1, subtotal: _dp, unit: match.unit });
-    }
-    renderCart();
-    toast(match.name + ' added', 'ok');
-    document.getElementById('posSearch').value = '';
-    renderPosProducts();
-  }
-}
-
-
 let posStream = null, posDetector = null, posScanActive = false, posUseFront = false, posLastScan = 0;
 
 function openPosBarcodeScanner() {
@@ -3179,7 +3119,7 @@ function createPosScannerModal() {
   const div = document.createElement('div');
   div.id = 'posScannerModal';
   div.style.cssText = 'display:flex;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:9999;flex-direction:column;align-items:center;justify-content:center;padding:12px;';
-  div.innerHTML = <div style="background:var(--surface);border-radius:var(--r-2xl);padding:20px;width:min(400px,95vw);max-height:95vh;overflow-y:auto;">
+  div.innerHTML = `<div style="background:var(--surface);border-radius:var(--r-2xl);padding:20px;width:min(400px,95vw);max-height:95vh;overflow-y:auto;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
       <div>
         <div style="font-size:16px;font-weight:800;letter-spacing:-.02em;">POS Scanner</div>
@@ -3204,7 +3144,7 @@ function createPosScannerModal() {
       <button onclick="closePosBarcodeScanner()" class="btn btn-secondary" style="flex:1;">Done</button>
       <button onclick="flipPosCamera()" class="btn btn-primary" style="flex:1;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:middle;margin-right:4px;"><path d="M16 3h5v5M8 3H3v5M3 16v5h5M21 16v5h-5"/><path d="M21 3l-7 7M3 21l7-7"/></svg>Flip Camera</button>
     </div>
-  </div>
+  </div>`;
   document.body.appendChild(div);
   startPosCamera();
 }
@@ -3233,23 +3173,18 @@ function startPosDetection() {
 async function detectPosFrame() {
   if (!posScanActive) return;
   const video = document.getElementById('posVideo');
-  if (!video || video.readyState < 2) { 
-    if (posScanActive) setTimeout(() => requestAnimationFrame(detectPosFrame), 100);
-    return; 
-  }
+  if (!video || video.readyState < 2) { requestAnimationFrame(detectPosFrame); return; }
   try {
     const barcodes = await posDetector.detect(video);
     if (barcodes.length > 0) {
       const code = barcodes[0].rawValue;
       const now = Date.now();
-      if (now - posLastScan > 1500) {
+      if (now - posLastScan > 1200) {
         posLastScan = now;
         handlePosScan(code);
       }
     }
-  } catch (e) { 
-    // silently continue — don't break the loop
-  }
+  } catch (e) { }
   if (posScanActive) requestAnimationFrame(detectPosFrame);
 }
 
@@ -3260,22 +3195,12 @@ function handlePosScan(code) {
   const log = document.getElementById('posScanLog');
 
   if (p) {
-    // Add to cart directly without triggering renderPosProducts
-    const ex = cart.find(i => i.prodId === p.id);
-    if (ex) {
-      if (ex.qty < p.stock) { ex.qty++; ex.subtotal = ex.qty * ex.price; }
-      else { setPosStatus('Max stock reached for: ' + p.name); return; }
-    } else {
-      const _dp = p.discount > 0 ? parseFloat((p.price - (p.price * p.discount / 100)).toFixed(2)) : p.price;
-      cart.push({ prodId: p.id, name: p.name, price: _dp, originalPrice: p.price, discount: p.discount || 0, qty: 1, subtotal: _dp, unit: p.unit });
-    }
-    renderCart(); // only update cart, NOT product grid
-
+    addToCart(p.id);
     setPosStatus('Added: ' + p.name);
     if (flash) { flash.style.opacity = '1'; setTimeout(() => flash.style.opacity = '0', 200); }
     try { const ctx = new AudioContext(); const o = ctx.createOscillator(); const g = ctx.createGain(); o.connect(g); g.connect(ctx.destination); o.frequency.value = 1200; g.gain.setValueAtTime(0.3, ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15); o.start(ctx.currentTime); o.stop(ctx.currentTime + 0.15); } catch (e) { }
     if (log) {
-      const first = log.querySelector('div');
+      const first = log.querySelector('div[style]');
       if (first && first.textContent.includes('Scanned items')) first.remove();
       const entry = document.createElement('div');
       entry.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--div);font-size:12.5px;animation:fadeUp .2s ease;';
@@ -3287,7 +3212,7 @@ function handlePosScan(code) {
     if (flash) { flash.style.background = 'rgba(220,38,38,.25)'; flash.style.opacity = '1'; setTimeout(() => { flash.style.opacity = '0'; flash.style.background = 'rgba(41,128,185,.25)'; }, 300); }
     try { const ctx = new AudioContext(); const o = ctx.createOscillator(); const g = ctx.createGain(); o.connect(g); g.connect(ctx.destination); o.frequency.value = 300; g.gain.setValueAtTime(0.3, ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3); o.start(ctx.currentTime); o.stop(ctx.currentTime + 0.3); } catch (e) { }
     if (log) {
-      const first = log.querySelector('div');
+      const first = log.querySelector('div[style]');
       if (first && first.textContent.includes('Scanned items')) first.remove();
       const entry = document.createElement('div');
       entry.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--div);font-size:12.5px;color:var(--err);';
