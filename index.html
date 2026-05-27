@@ -2336,41 +2336,50 @@ function drawDashCharts(orders) {
 // ============================================================
 function loadPOS() { renderPosCatTabs(); renderPosProducts(); renderCart(); document.getElementById('taxRateLbl').textContent = S().taxRate || 0; }
 
-function loadPOS() { renderPosCatTabs(); renderPosProducts(); renderCart(); document.getElementById('taxRateLbl').textContent = S().taxRate || 0; }
-
 let posSearchTimer = null;
 let posSearchLock = false;
 
 function handlePosSearch() {
   clearTimeout(posSearchTimer);
   renderPosProducts();
-  
   const q = (document.getElementById('posSearch')?.value || '').trim();
-  
   if (/^\d{8,}$/.test(q)) {
     posSearchTimer = setTimeout(() => {
       if (posSearchLock) return;
-      const prods = DB.get('products') || [];
-      const match = prods.find(p => p.barcode === q && p.status);
-      if (match) {
-        posSearchLock = true;
-        const ex = cart.find(i => i.prodId === match.id);
-        if (ex) {
-          if (ex.qty < match.stock) { ex.qty++; ex.subtotal = ex.qty * ex.price; }
-          else { toast('Max stock reached!', 'wa'); }
-        } else {
-          const _dp = match.discount > 0 
-            ? parseFloat((match.price - (match.price * match.discount / 100)).toFixed(2)) 
-            : match.price;
-          cart.push({ prodId: match.id, name: match.name, price: _dp, originalPrice: match.price, discount: match.discount || 0, qty: 1, subtotal: _dp, unit: match.unit });
-        }
-        renderCart();
-        toast(match.name + ' added', 'ok');
-        document.getElementById('posSearch').value = '';
-        renderPosProducts();
-        setTimeout(() => { posSearchLock = false; }, 1000);
-      }
-    }, 300);
+      posSearchLock = true;
+      _addByBarcode(q);
+      setTimeout(() => { posSearchLock = false; }, 1500);
+    }, 600);
+  }
+}
+
+function handlePosSearchEnter() {
+  clearTimeout(posSearchTimer);
+  if (posSearchLock) return;
+  const q = (document.getElementById('posSearch')?.value || '').trim();
+  posSearchLock = true;
+  _addByBarcode(q);
+  setTimeout(() => { posSearchLock = false; }, 1500);
+}
+
+function _addByBarcode(q) {
+  const prods = DB.get('products') || [];
+  const match = prods.find(p => p.barcode === q && p.status);
+  if (match) {
+    const ex = cart.find(i => i.prodId === match.id);
+    if (ex) {
+      if (ex.qty < match.stock) { ex.qty++; ex.subtotal = ex.qty * ex.price; }
+      else { toast('Max stock reached!', 'wa'); }
+    } else {
+      const _dp = match.discount > 0
+        ? parseFloat((match.price - (match.price * match.discount / 100)).toFixed(2))
+        : match.price;
+      cart.push({ prodId: match.id, name: match.name, price: _dp, originalPrice: match.price, discount: match.discount || 0, qty: 1, subtotal: _dp, unit: match.unit });
+    }
+    renderCart();
+    toast(match.name + ' added', 'ok');
+    document.getElementById('posSearch').value = '';
+    renderPosProducts();
   }
 }
 
