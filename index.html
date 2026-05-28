@@ -2633,62 +2633,125 @@ function printReceipt() {
   const isSi = (window.posLang && window.posLang() === 'si');
   const fontLink = isSi ? '<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;700&display=swap" rel="stylesheet">' : '';
   const fontFamily = isSi ? "'Noto Sans Sinhala','Courier New',Courier,monospace" : "'Courier New',Courier,monospace";
-  const w = window.open('', '_blank', 'width=350,height=800');
-  w.document.write(`<html><head><title>Receipt</title>${fontLink}<style>
-    @page {
-      margin: 0;
-      size: auto;
-    }
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-    body {
-      font-family: ${fontFamily};
-      font-size: 13px;
-      line-height: 1.6;
-      width: 100%;
-      max-width: 76mm;
-      padding: 4mm 3mm;
-      color: #000;
-      background: #fff;
-    }
-    .r-center { text-align: center; }
-    .r-row {
-      display: flex;
-      justify-content: space-between;
-      width: 100%;
-    }
-    .r-row span:first-child { flex: 1; }
-    .r-row span:last-child { text-align: right; white-space: nowrap; }
-    hr {
-      border: none;
-      border-top: 1px dashed #000;
-      margin: 4px 0;
-    }
-    strong { font-weight: bold; }
-    img { max-width: 20mm; height: auto; }
-    .r-center strong { font-size: 15px; }
-    .cut-line {
-      text-align: center;
-      margin-top: 8px;
-      font-size: 11px;
-      letter-spacing: 2px;
-      color: #999;
-    }
-    @media print {
-      body {
-        width: 100%;
-        max-width: 100%;
-        padding: 2mm 3mm;
-        font-size: 13px;
+
+  const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+
+  if (isMobile) {
+    // Mobile: inject a hidden iframe into the same page and print from it
+    let iframe = document.getElementById('_printFrame');
+    if (iframe) iframe.remove();
+    iframe = document.createElement('iframe');
+    iframe.id = '_printFrame';
+    iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:80mm;height:1px;border:none;opacity:0;';
+    document.body.appendChild(iframe);
+
+    const doc = iframe.contentDocument || iframe.contentWindow.document;
+    doc.open();
+    doc.write(`<!DOCTYPE html><html><head><title>Receipt</title>${fontLink}<style>
+      @page {
+        size: auto;
+        margin: 3mm 2mm;
       }
-    }
-  </style></head><body>${content}<div class="cut-line">- - - - - - - - - - - - - - -</div></body></html>`);
-  w.document.close();
-  w.focus();
-  setTimeout(function () { w.print(); }, 600);
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html, body {
+        font-family: ${fontFamily};
+        font-size: 14px;
+        line-height: 1.65;
+        width: 100%;
+        color: #000;
+        background: #fff;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .r-center { text-align: center; }
+      .r-row {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        gap: 4px;
+      }
+      .r-row span:first-child { flex: 1; word-break: break-word; }
+      .r-row span:last-child { text-align: right; white-space: nowrap; }
+      hr { border: none; border-top: 1px dashed #000; margin: 5px 0; }
+      strong { font-weight: bold; }
+      img { max-width: 18mm; height: auto; display: block; margin: 0 auto; }
+      .r-center strong { font-size: 16px; }
+      .cut-line {
+        text-align: center;
+        margin-top: 8px;
+        font-size: 11px;
+        letter-spacing: 2px;
+        color: #999;
+      }
+    </style></head><body>${content}
+    <div class="cut-line">- - - - - - - - - - - - - -</div>
+    </body></html>`);
+    doc.close();
+
+    iframe.onload = function () {
+      try {
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+      } catch (e) {
+        // fallback for some mobile browsers
+        window.print();
+      }
+      setTimeout(() => { if (iframe) iframe.remove(); }, 3000);
+    };
+
+  } else {
+    // Desktop: use popup window as before
+    const w = window.open('', '_blank', 'width=350,height=800');
+    w.document.write(`<!DOCTYPE html><html><head><title>Receipt</title>${fontLink}<style>
+      @page {
+        size: auto;
+        margin: 0;
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        font-family: ${fontFamily};
+        font-size: 13px;
+        line-height: 1.6;
+        width: 100%;
+        max-width: 76mm;
+        padding: 4mm 3mm;
+        color: #000;
+        background: #fff;
+      }
+      .r-center { text-align: center; }
+      .r-row {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+      }
+      .r-row span:first-child { flex: 1; }
+      .r-row span:last-child { text-align: right; white-space: nowrap; }
+      hr { border: none; border-top: 1px dashed #000; margin: 4px 0; }
+      strong { font-weight: bold; }
+      img { max-width: 20mm; height: auto; }
+      .r-center strong { font-size: 15px; }
+      .cut-line {
+        text-align: center;
+        margin-top: 8px;
+        font-size: 11px;
+        letter-spacing: 2px;
+        color: #999;
+      }
+      @media print {
+        body {
+          width: 100%;
+          max-width: 100%;
+          padding: 2mm 3mm;
+          font-size: 13px;
+        }
+      }
+    </style></head><body>${content}
+    <div class="cut-line">- - - - - - - - - - - - - -</div>
+    </body></html>`);
+    w.document.close();
+    w.focus();
+    setTimeout(function () { w.print(); }, 600);
+  }
 }
 // ============================================================
 // PRODUCTS
