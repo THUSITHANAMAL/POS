@@ -2633,11 +2633,63 @@ function printReceipt() {
   const isSi = (window.posLang && window.posLang() === 'si');
   const fontLink = isSi ? '<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;700&display=swap" rel="stylesheet">' : '';
   const fontFamily = isSi ? "'Noto Sans Sinhala','Courier New',Courier,monospace" : "'Courier New',Courier,monospace";
-  const w = window.open('', '_blank', 'width=250,height=700');
-  w.document.write(`<html><head><title>Receipt</title>${fontLink}<style>@page{margin:0;size:58mm auto;}*{box-sizing:border-box;margin:0;padding:0;}body{font-family:${fontFamily};font-size:11px;line-height:1.5;width:48mm;padding:3mm 2mm;color:#000;background:#fff;}.r-center{text-align:center;}.r-row{display:flex;justify-content:space-between;width:100%;}.r-row span:first-child{flex:1;}.r-row span:last-child{text-align:right;white-space:nowrap;}hr{border:none;border-top:1px dashed #000;margin:3px 0;}strong{font-weight:bold;}img{max-width:20mm;height:auto;}.r-center strong{font-size:13px;}.cut-line{text-align:center;margin-top:6px;font-size:10px;letter-spacing:2px;color:#999;}</style></head><body>${content}<div class="cut-line">- - - - - - - - - - - -</div></body></html>`);
-  w.document.close(); w.focus(); setTimeout(function () { w.print(); }, 600);
+  const w = window.open('', '_blank', 'width=350,height=800');
+  w.document.write(`<html><head><title>Receipt</title>${fontLink}<style>
+    @page {
+      margin: 0;
+      size: auto;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: ${fontFamily};
+      font-size: 13px;
+      line-height: 1.6;
+      width: 100%;
+      max-width: 76mm;
+      padding: 4mm 3mm;
+      color: #000;
+      background: #fff;
+    }
+    .r-center { text-align: center; }
+    .r-row {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+    }
+    .r-row span:first-child { flex: 1; }
+    .r-row span:last-child { text-align: right; white-space: nowrap; }
+    hr {
+      border: none;
+      border-top: 1px dashed #000;
+      margin: 4px 0;
+    }
+    strong { font-weight: bold; }
+    img { max-width: 20mm; height: auto; }
+    .r-center strong { font-size: 15px; }
+    .cut-line {
+      text-align: center;
+      margin-top: 8px;
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: #999;
+    }
+    @media print {
+      body {
+        width: 100%;
+        max-width: 100%;
+        padding: 2mm 3mm;
+        font-size: 13px;
+      }
+    }
+  </style></head><body>${content}<div class="cut-line">- - - - - - - - - - - - - - -</div></body></html>`);
+  w.document.close();
+  w.focus();
+  setTimeout(function () { w.print(); }, 600);
 }
-
 // ============================================================
 // PRODUCTS
 // ============================================================
